@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const morgan = require('morgan');
 const cors = require('cors');
 const app = express();
-const port = 1337;
+const port = 3000;
 const index = require('./routes/index');
 const register = require('./routes/register');
 const login = require('./routes/login');
@@ -26,7 +26,6 @@ const db = new sqlite3.Database('./db/db.sqlite');
 
 
 io.on('connection', function (socket) {
-       socket.broadcast.emit('message-broadcast', msg, nick);
     console.log('a user connected');
     socket.on('disconnect', () => {
         console.log('user disconnected');
