@@ -6,7 +6,7 @@ const db = new sqlite3.Database('./db/db.sqlite');
 
 router.post('/', function(req, res) {
     const email = req.body.email;
-    let sql = "SELECT name FROM users WHERE email = ?";
+    let sql = "SELECT deposit FROM users WHERE email = ?";
 
     db.each(sql, [email], (err, row) => {
         if (err) {
@@ -18,7 +18,7 @@ router.post('/', function(req, res) {
         } else {
             const data = {
                 data: {
-                    username: `${row.name}`,
+                    funds: `${row.deposit}`,
                 }
             };
             res.json(data);

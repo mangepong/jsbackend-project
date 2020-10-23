@@ -5,14 +5,20 @@ const cors = require('cors');
 const app = express();
 const port = 1337;
 const index = require('./routes/index');
-// const kmom = require('./routes/kmom');
 const register = require('./routes/register');
 const login = require('./routes/login');
 const username = require('./routes/username');
-// const reports = require('./routes/reports');
-// const log = require('./routes/log');
+const deposit = require('./routes/deposit');
+const funds = require('./routes/funds');
+const create = require('./routes/create_obj');
+const objects = require('./routes/get-object');
+const buy = require('./routes/bought-obj');
+const myobjects = require('./routes/my-objects');
+const deleteHistory = require('./routes/delete-history');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./db/db.sqlite');
 // const mongo = require("mongodb").MongoClient;
 // const dsn =  process.env.DBWEBB_DSN || "mongodb://localhost:27017/chatlog";
 
@@ -20,30 +26,29 @@ const io = require('socket.io')(server);
 
 
 io.on('connection', function (socket) {
-    socket.on('message', (msg, nick, time) => {
        socket.broadcast.emit('message-broadcast', msg, nick);
-       var date = new Date();
-       let options = {
-                 hour: "2-digit", minute: "2-digit"
-            };
-       // var time = date.toLocaleTimeString("sv-SE", options);
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+      });
+    socket.on('message', () => {
 
-       async function saveLog(nick, msg, time) {
-           const client = await mongo.connect(dsn);
-           const db = await client.db();
-           const col = await db.collection("users");
-           const chatlog =
-           {
-               user: nick,
-               msg: msg,
-               time: time
-           };
+        let sql = "SELECT * FROM objects";
 
-           await col.insertOne(chatlog);
-       }
-       saveLog(nick, msg, time);
+        db.all(sql, (err, row) => {
+            if (err) {
+                console.log(err);
+
+            } else {
+                console.log(row);
+                io.emit('broadcast', row);
+            }
+        });
     });
 });
+
+
+
 
 
 
@@ -59,9 +64,15 @@ app.use('/', index);
 app.use('/register', register);
 app.use('/login', login);
 app.use('/username', username);
-// app.use('/reports/week', kmom);
-// app.use('/reports', reports);
-// app.use('/log', log);
+app.use('/deposit', deposit);
+app.use('/funds', funds);
+app.use('/create', create);
+app.use('/objects', objects);
+app.use('/buy', buy);
+app.use('/myobjects', myobjects);
+app.use('/delete', deleteHistory);
+
+
 
 server.listen(port, () => console.log(`Backend API listening on port ${port}!`));
 // Start up server
