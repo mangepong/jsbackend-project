@@ -12,7 +12,7 @@ router.post('/', function(req, res) {
     var deposit = req.body.deposit;
 
     var data = [buyer, objectname, price, name]
-    let sql = "INSERT INTO bought (user, objectname, price, seller) VALUES (?, ?, ?)";
+    let sql = "INSERT INTO bought (user, objectname, price, seller) VALUES (?, ?, ?, ?)";
         db.run(sql, data, function(err) {
             if (err) {
                 console.log("ERROR");
