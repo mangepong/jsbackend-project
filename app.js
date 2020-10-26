@@ -44,6 +44,16 @@ io.on('connection', function (socket) {
             }
         });
     });
+
+    socket.on('funds', (name) => {
+        db.get("SELECT deposit, name FROM users WHERE name=?", [name], (err, row) => {
+            if (err) {
+                console.log(err)
+            } else {
+                io.emit('broadcast-funds', row);
+            }
+        });
+    });
 });
 
 
